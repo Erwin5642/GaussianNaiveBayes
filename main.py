@@ -1,5 +1,5 @@
 """Naive Bayes Gaussiano."""
-
+import numpy as np
 
 class GaussianNaiveBayes:
     def fit(self, X, y):
@@ -10,14 +10,24 @@ class GaussianNaiveBayes:
         """Retorna a classe de maior log-posteriori para cada amostra."""
         raise NotImplementedError
 
-
+"""Le o dataset, converte de numpy.ndarray para list nativa do python e retorna (X, y)."""
 def load_dataset(path):
-    """Lê o dataset e retorna (X, y)."""
-    raise NotImplementedError
+    X = np.loadtxt(path, usecols = [0, 1, 2, 3, 4, 5, 6], dtype = float)
+    y = np.loadtxt(path, usecols = 7, dtype = int)
+
+    X_list = X.tolist()
+    y_list = y.tolist()
+    return X_list, y_list
 
 
 def main():
-    # TODO: carregar dados, dividir treino/teste, treinar e avaliar
+    """Faz a leitura do dataset e grava em X e y"""
+    X, y = load_dataset('seeds_dataset.txt')
+
+    print(X)
+    print(y)
+
+    # TODO: dividir treino/teste, treinar e avaliar
     pass
 
 
