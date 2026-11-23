@@ -5,13 +5,45 @@ SEED = 123
 TAM_TESTE = 0.25
 
 class GaussianNaiveBayes:
+    def __init__(self):
+        self._classes = None
+        self._priors = None
+        self._means = None
+        self._vars = None
+        self._likelihood = None
+
     def fit(self, X, y):
         """Estima priors, médias e variâncias de cada atributo por classe."""
-        raise NotImplementedError
+        X = np.asarray(X, dtype=np.float64)
+        y = np.asarray(y)
+
+        n_samples, n_features = X.shape
+        self._classes, counts = np.unique(y, return_counts=True)
+        n_classes = len(self._classes)
+
+        self._means = np.zeros((n_classes, n_features))
+        self._vars = np.zeros((n_classes, n_features))
+
+        for idx, _class in enumerate(self._classes):
+            X_c = X[y == _class]
+            self._means[idx] = np.mean(X_c, axis=0)
+            self._vars[idx] = np.var(X_c, axis=0)
+
+        self._priors = counts / len(y)
+        return self
 
     def predict(self, X):
         """Retorna a classe de maior log-posteriori para cada amostra."""
-        raise NotImplementedError
+        X = np.asarray(X, dtype=np.float64)
+        posteriors = []
+
+        for idx, _ in enumerate(self._classes):
+            log_likelihood = -0.5 * np.sum(
+                np.log(2.0 * np.pi * self._vars[idx]) + ((X - self._means[idx]) ** 2) / self._vars[idx], axis=1)
+            posteriors.append(np.log(self._priors[idx]) + log_likelihood)
+
+        posteriors = np.array(posteriors).T
+        return self._classes[np.argmax(posteriors, axis=1)]
 
 
 """Le o dataset, converte de numpy.ndarray para list nativa do python e retorna (X, y)."""
